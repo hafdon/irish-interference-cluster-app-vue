@@ -48,7 +48,7 @@
           class="mb-6 p-4 border rounded-lg shadow-sm bg-gray-50"
         >
           <p class="text-xl font-medium mb-3">
-            {{ capitalize(item.word) }} -
+            {{ item.word }} -
             <span class="text-gray-600 italic">{{ item.meaning }}</span>
           </p>
           <div
@@ -92,8 +92,9 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import { Howl } from "howler";
-// import Vue3SimpleTypeahead from "vue3-simple-typeahead";
 import { useToast } from "vue-toastification"; // Import useToast
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Initialize toast
 const toast = useToast();
@@ -109,8 +110,9 @@ const allWords = ref([]); // For autocomplete suggestions
 // Fetch all words on initial load for autocomplete
 const fetchAllWords = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/interferesIds");
+    const response = await axios.get(`${API_BASE_URL}/interferesIds`); // Now run locally!
     const data = response.data;
+    console.log("data", data);
 
     const wordSet = new Set();
 
@@ -121,6 +123,7 @@ const fetchAllWords = async () => {
       });
     });
 
+    // set reactive list of all words for search autocomplete
     allWords.value = Array.from(wordSet).sort();
   } catch (error) {
     console.error("Error fetching all words for autocomplete:", error);
@@ -156,12 +159,6 @@ const itemProjectionFunction = (item) => {
   return item;
 };
 
-// Function to capitalize words for display
-const capitalize = (word) => {
-  if (!word) return "";
-  return word.charAt(0).toUpperCase() + word.slice(1);
-};
-
 // Function to highlight matched text
 const highlightMatch = (item) => {
   const query = inputWord.value.trim().toLowerCase();
@@ -182,7 +179,7 @@ const searchWord = async () => {
   if (!word) return;
 
   try {
-    const response = await axios.get("http://localhost:3000/interferesIds");
+    const response = await axios.get(`${API_BASE_URL}/interferesIds`);
     const data = response.data;
 
     // Reset previous results
@@ -261,9 +258,7 @@ const playAudio = (item, region) => {
       isPlaying.value = false;
       // Use toast to inform the user about the error
       toast.error(
-        `Failed to load audio for "${capitalize(
-          item.word
-        )}" in region "${region}". The button will be disabled.`
+        `Failed to load audio for "${item.word}" in region "${region}". The button will be disabled.`
       );
       // Disable the button as audio failed to load
       item.audio[region] = false;
@@ -273,9 +268,7 @@ const playAudio = (item, region) => {
       isPlaying.value = false;
       // Use toast to inform the user about the error
       toast.error(
-        `Failed to play audio for "${capitalize(
-          item.word
-        )}" in region "${region}". The button will be disabled.`
+        `Failed to play audio for "${item.word}" in region "${region}". The button will be disabled.`
       );
       // Disable the button as audio failed to play
       item.audio[region] = false;
