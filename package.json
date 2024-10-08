@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:nginx": "vite --mode nginx",
+    "dev:jsonServer": "vite --mode jsonServer",
     "build": "vite build",
     "preview": "vite preview"
   },

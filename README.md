@@ -55,6 +55,16 @@ A Vue 3 application that allows users to search for Irish words, view related wo
    npm install
    ```
 
+- 2b. **(Optional) Check vite installation location**
+
+  ```bash
+  # Check local installation
+  npm list vite
+
+  # Check global installation (Prefer using local)
+  npm list -g vite
+  ```
+
 3. **Set Up JSON Server:**
 
    - Ensure `json-server` is installed globally. If not, install it:
@@ -79,12 +89,11 @@ A Vue 3 application that allows users to search for Irish words, view related wo
    npm run dev
 
    # to run using the Nginx server as api
-   # (command based on name of .env file)
-   npx vite --mode nginx
+   npm run dev:nginx
 
    # to run using json-server as api
-   # (command based on name of .env file)
-   npx vite --mode jsonServer
+   npm run dev:jsonServer
+
    ```
 
    The app will typically be available at `http://localhost:5173/`.
