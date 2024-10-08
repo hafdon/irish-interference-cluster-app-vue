@@ -110,7 +110,7 @@ const allWords = ref([]); // For autocomplete suggestions
 // Fetch all words on initial load for autocomplete
 const fetchAllWords = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/interferesIds`); // Now run locally!
+    const response = await axios.get(`api/interferesIds`); // Now run locally!
     const data = response.data;
     console.log("data", data);
 
@@ -179,7 +179,7 @@ const searchWord = async () => {
   if (!word) return;
 
   try {
-    const response = await axios.get(`${API_BASE_URL}/interferesIds`);
+    const response = await axios.get(`api/interferesIds`);
     const data = response.data;
 
     // Reset previous results

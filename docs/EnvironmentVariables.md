@@ -206,6 +206,7 @@ Here's a step-by-step guide to achieve this:
      This command uses the `.env.nginx` file, setting `VITE_API_BASE_URL` to `http://localhost`.
 
    - **Using JSON Server:**
+ 
      ```bash
      vite --mode jsonServer
      ```

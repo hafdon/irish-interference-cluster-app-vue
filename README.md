@@ -77,6 +77,14 @@ A Vue 3 application that allows users to search for Irish words, view related wo
 
    ```bash
    npm run dev
+
+   # to run using the Nginx server as api
+   # (command based on name of .env file)
+   npx vite --mode nginx
+
+   # to run using json-server as api
+   # (command based on name of .env file)
+   npx vite --mode jsonServer
    ```
 
    The app will typically be available at `http://localhost:5173/`.
