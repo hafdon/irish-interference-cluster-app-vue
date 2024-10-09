@@ -1,5 +1,6 @@
 // vite.config.js
 import vue from "@vitejs/plugin-vue";
+import path from "path"; // Import the path module
 import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
@@ -8,6 +9,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [vue()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"), // Define '@' as an alias for 'src'
+      },
+    },
     server: {
       proxy: {
         "/api": {
