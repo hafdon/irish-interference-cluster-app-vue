@@ -3,7 +3,7 @@
     <div class="word-details">
       <span><strong>Irish:</strong> {{ word.irish }}</span>
       <span><strong>English:</strong> {{ word.english }}</span>
-      <span><strong>Cluster ID:</strong> {{ word.cluster_id }}</span>
+      <!-- <span><strong>Cluster ID:</strong> {{ word.cluster_id }}</span> -->
     </div>
     <div class="word-actions">
       <button class="details-button" @click="emitToggleClusterVisibililtyClick">
@@ -13,12 +13,16 @@
             : "Show All Clusters"
         }}
       </button>
-      <router-link :to="{ name: 'ReassignCluster', params: { id: word.id } }">
-        <button class="reassign-button">Reassign</button>
+      <router-link
+        :to="{ name: 'ReassignCluster', params: { id: word.id } }"
+        class="reassign-link"
+      >
+        Reassign
       </router-link>
     </div>
   </div>
 </template>
+
 <script setup>
 const props = defineProps({
   word: {
@@ -38,84 +42,35 @@ const emitToggleClusterVisibililtyClick = () => {
 };
 </script>
 <style scoped>
-button {
-  background-color: #4caf50; /* Green background */
+/* General Button Styles */
+button,
+.reassign-link {
+  background-color: #4caf50; /* Default Green background */
   border: none; /* Remove borders */
   color: white; /* White text */
-  padding: 10px 20px; /* Add some padding */
+  padding: 10px 20px; /* Consistent padding */
   text-align: center; /* Center the text */
-  text-decoration: none; /* Remove underlines */
-  display: inline-block; /* Make the button inline */
-  font-size: 16px; /* Increase font size */
-  margin: 4px 2px; /* Add some margin */
-  cursor: pointer; /* Add a pointer on hover */
+  text-decoration: none; /* Remove underlines for links */
+  display: inline-flex; /* Use inline-flex for better alignment */
+  align-items: center; /* Vertically center content */
+  justify-content: center; /* Horizontally center content */
+  font-size: 16px; /* Consistent font size */
+  cursor: pointer; /* Pointer cursor on hover */
   border-radius: 5px; /* Rounded corners */
+  min-width: 150px; /* Ensures buttons don't shrink below this width */
+  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+  white-space: nowrap; /* Prevents text from wrapping */
+  overflow: hidden; /* Hides overflow text */
+  text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
 }
 
-button:hover {
-  background-color: #45a049; /* Darker green on hover */
-}
-.word-list {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 15px; /* Reduced padding */
-  font-family: Arial, sans-serif;
-}
-
-.word-list h2 {
-  text-align: center;
-  margin-bottom: 15px; /* Reduced margin */
-  font-size: 1.5em;
-}
-
-.word-item {
-  border: 1px solid #ddd;
-  padding: 10px; /* Reduced padding */
-  margin-bottom: 8px; /* Reduced margin */
-  border-radius: 4px;
-  background-color: #f9f9f9;
-}
-
-.word-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap; /* Allows wrapping on smaller screens */
-}
-
-.word-details {
-  display: flex;
-  gap: 15px; /* Space between details */
-  flex-wrap: wrap;
-  font-size: 0.9em; /* Slightly smaller font */
-}
-
-.word-details span {
-  display: flex;
-  align-items: center;
-}
-
-.word-actions {
-  display: flex;
-  gap: 10px; /* Space between buttons */
-  margin-top: 5px; /* Reduced top margin */
-}
-
-.reassign-button,
-.details-button {
-  padding: 6px 10px; /* Reduced padding */
-  font-size: 0.85em; /* Smaller font */
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.reassign-button {
+/* Specific Button Styles */
+.reassign-link {
   background-color: #f0ad4e;
   color: white;
 }
 
-.reassign-button:hover {
+.reassign-link:hover {
   background-color: #ec971f;
 }
 
@@ -133,52 +88,80 @@ button:hover {
   cursor: not-allowed;
 }
 
-.cluster-words {
-  margin-top: 10px;
-  padding-left: 20px;
-  border-left: 2px solid #f0ad4e;
-  font-size: 0.85em; /* Smaller font */
+/* Container Styles */
+.word-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap; /* Prevent wrapping to maintain layout stability */
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
 }
 
-.no-cluster {
-  margin-top: 10px;
-  padding-left: 20px;
-  color: #d9534f;
-  font-size: 0.85em; /* Smaller font */
+/* Word Details Styles */
+.word-details {
+  display: flex;
+  gap: 20px; /* Increased space between details for better readability */
+  flex: 1; /* Allows word-details to take available space */
+  min-width: 300px; /* Ensures word-details doesn't shrink too much */
+  font-size: 0.95em; /* Slightly larger font for better readability */
 }
 
-.error-message {
-  color: red;
-  margin-top: 15px; /* Reduced top margin */
-  text-align: center;
-  font-size: 0.9em;
+.word-details span {
+  display: flex;
+  align-items: center;
+  max-width: 250px; /* Limits the width of each detail to prevent overflow */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Word Actions Styles */
+.word-actions {
+  display: flex;
+  gap: 15px; /* Increased space between buttons */
+  flex-shrink: 0; /* Prevents actions from shrinking */
+}
+
+.reassign-link {
+  /* Inherit button styles */
 }
 
 /* Responsive Adjustments */
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   .word-info {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  .word-details {
+    gap: 10px;
+    min-width: 100%;
+  }
+
   .word-actions {
-    margin-top: 10px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  button,
+  .reassign-link {
+    width: 48%; /* Allows two buttons to sit side by side with some gap */
+    min-width: unset; /* Removes min-width on smaller screens */
   }
 }
 
-.loading-spinner {
-  text-align: center;
-  font-size: 1em;
-  color: #5bc0de;
-  margin-top: 20px;
-}
+@media (max-width: 500px) {
+  .word-details {
+    flex-direction: column;
+    gap: 8px;
+  }
 
-.search-input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9em;
+  button,
+  .reassign-link {
+    width: 100%; /* Full width buttons on very small screens */
+  }
 }
 </style>

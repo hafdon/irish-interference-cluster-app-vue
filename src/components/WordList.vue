@@ -15,9 +15,9 @@
       />
 
       <ul>
-        <li v-for="word in filteredWords" :key="word.id" class="word-item">
+        <li v-for="word in filteredWords" :key="word.id" class="flex flex-col">
           <!-- Cluster Words Details -->
-          <WordListItem
+          <WordListItemCompact
             :word="word"
             :clustersFiltered="filterClusterId !== null"
             @toggleClusterVisibilityClicked="handleToggleClusterVisibilityClick"
@@ -35,7 +35,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue"; // Import necessary Vue functions
 import apiClient from "@/plugins/axios"; // Import your Axios instance
-import WordListItem from "@/components/WordListItem.vue";
+import WordListItemCompact from "@/components/WordListItemCompact.vue";
 
 // Reactive state variables
 const words = ref([]);
