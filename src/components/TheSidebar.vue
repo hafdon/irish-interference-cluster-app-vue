@@ -13,6 +13,15 @@
       </li>
       <li>
         <router-link
+          to="/word-add"
+          exact-active-class="active-link"
+          active-class="active-link"
+        >
+          Add a Word
+        </router-link>
+      </li>
+      <li>
+        <router-link
           to="/cluster"
           exact-active-class="active-link"
           active-class="active-link"

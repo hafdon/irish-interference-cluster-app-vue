@@ -24,6 +24,23 @@ export const useClustersStore = defineStore("clusters", () => {
     }
   };
 
+  const addCluster = async (clusterData) => {
+    isLoading.value = true;
+    errorMessage.value = "";
+
+    try {
+      const response = await apiClient.post("/clusters/", clusterData);
+      clusters.value.push(response.data);
+      return response.data; // Return the new cluster for further use
+    } catch (error) {
+      console.error("Error adding cluster:", error);
+      errorMessage.value = "Failed to add cluster.";
+      throw error; // To handle in the component
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     clusters,
     isLoading,

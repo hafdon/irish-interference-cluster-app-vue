@@ -2,6 +2,7 @@
 import AssignClusterForm from "@/components/AssignClusterForm.vue";
 import ClusterCatalog from "@/components/ClusterCatalog.vue";
 import ClusterList from "@/components/ClusterList.vue";
+import WordAddForm from "@/components/WordAddForm.vue";
 import WordList from "@/components/WordList.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -10,6 +11,11 @@ const routes = [
     path: "/",
     name: "WordList",
     component: WordList,
+  },
+  {
+    path: "/word-add",
+    name: "AddWord",
+    component: WordAddForm,
   },
   {
     path: "/words/:id/reassign",
