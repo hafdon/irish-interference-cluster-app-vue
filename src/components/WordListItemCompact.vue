@@ -34,6 +34,16 @@
       </router-link>
     </span>
 
+    <!-- Cluster View Link -->
+    <span>
+      <router-link
+        :to="{ name: 'ClusterList', params: { id: word.cluster_id } }"
+        class="text-blue-500 hover:underline text-xs px-1 py-0.5"
+      >
+        Cluster View
+      </router-link>
+    </span>
+
     <!-- Remove Button -->
     <span>
       <button

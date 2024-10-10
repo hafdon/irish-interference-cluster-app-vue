@@ -4,6 +4,15 @@
       {{ item.word }} -
       <span class="text-gray-600 italic">{{ item.meaning }}</span>
     </p>
+    <div>
+      <router-link
+        :to="{ name: 'ReassignCluster', params: { id: item.id } }"
+        class="reassign-link"
+      >
+        Reassign
+      </router-link>
+    </div>
+
     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
       <button
         @click="playAudio(item, 'Connacht')"

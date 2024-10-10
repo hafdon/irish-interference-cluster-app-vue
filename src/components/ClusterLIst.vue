@@ -51,7 +51,7 @@
         <div class="space-y-4">
           <ClusterListItem
             v-for="item in wordsInSameCluster"
-            :key="item.word"
+            :key="item.id"
             :item="item"
             @audioFailure="(ev) => handleAudioFailure(ev, item)"
           />
@@ -203,6 +203,8 @@ const wordsInSameCluster = computed(() => {
         .map((el) => ({
           word: el.irish,
           meaning: el.english,
+          id: el.id,
+          cluster_id: el.cluster_id,
           audio: {
             Connacht: true, // Assume audio is available initially
             Munster: true,

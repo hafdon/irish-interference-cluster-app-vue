@@ -20,9 +20,7 @@
           :key="cluster.id"
           :value="cluster.id"
         >
-          Cluster {{ cluster.id }} ({{
-            Object.keys(cluster.cluster).join(", ")
-          }})
+          {{ Object.keys(cluster.cluster).join(", ") }}
         </option>
       </select>
 
