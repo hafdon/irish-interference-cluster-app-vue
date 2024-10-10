@@ -68,7 +68,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, reactive, watch } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router"; // Import useRoute and useRouter
 import apiClient from "@/plugins/axios"; // Import your Axios instance
 import { Howl } from "howler";
 import { useToast } from "vue-toastification"; // Import useToast
@@ -77,12 +78,16 @@ import ClusterListItem from "@/components/ClusterListItem.vue";
 // Initialize toast
 const toast = useToast();
 
+// Initialize router and route
+const router = useRouter();
+const route = useRoute();
+
 // State variables
 const inputWord = ref("");
-const words = ref([]);
-const searched = ref(false);
-const isPlaying = ref(false);
-let currentSound = null;
+// const words = ref([]);
+const searched = ref(false); // Not sure how this gets used; it is never modified
+// const isPlaying = ref(false);
+// let currentSound = null;
 const apiDataAllWords = ref([]);
 
 const props = defineProps({
@@ -94,9 +99,26 @@ const clusterId = ref(props.id);
 const simpleTypeaheadModel = ref("");
 
 // Watch for changes in the prop and update the ref accordingly
-// Watch the `name` ref for changes
+// Watch the `clusterId` ref for changes
 watch(clusterId, (newValue, oldValue) => {
   console.log(`clusterId changed from "${oldValue}" to "${newValue}"`);
+
+  // Only navigate if the newValue is different and not null/undefined
+  if (newValue && newValue !== route.params.id) {
+    // Navigate to the same route with the updated 'id' parameter
+    router
+      .push({
+        name: route.name, // Assumes the route has a name
+        params: { ...route.params, id: newValue },
+        query: route.query, // Preserve existing query parameters
+      })
+      .catch((err) => {
+        // Handle NavigationDuplicated error if navigating to the same route
+        if (err.name !== "NavigationDuplicated") {
+          console.error("Navigation error:", err);
+        }
+      });
+  }
 });
 
 const handleAudioFailure = (region, item) => {
