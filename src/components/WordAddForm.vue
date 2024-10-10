@@ -17,6 +17,19 @@
           placeholder="Enter the word"
         />
       </div>
+      <div>
+        <label for="meaning" class="block text-sm font-medium text-gray-700"
+          >Meaning</label
+        >
+        <input
+          type="text"
+          id="meaning"
+          v-model="meaningModel"
+          required
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+          placeholder="Enter the meaning"
+        />
+      </div>
 
       <!-- Cluster Selection -->
       <div>
@@ -68,7 +81,7 @@
             :key="cluster.id"
             :value="cluster.id"
           >
-            {{ cluster.name }}
+            {{ cluster.text }}
           </option>
         </select>
       </div>
@@ -97,10 +110,10 @@
       <div>
         <button
           type="submit"
-          :disabled="isLoading"
+          :disabled="clustersStore.isLoading"
           class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          {{ isLoading ? "Adding..." : "Add Word" }}
+          {{ clustersStore.isLoading ? "Adding..." : "Add Word" }}
         </button>
       </div>
     </form>
@@ -117,6 +130,7 @@ const clustersStore = useClustersStore();
 
 // Form state
 const word = ref("");
+const meaningModel = ref("");
 const clusterOption = ref("existing"); // 'existing' or 'new'
 const selectedClusterId = ref("");
 const newClusterName = ref("");
@@ -128,7 +142,14 @@ onMounted(() => {
 });
 
 // Computed property for clusters
-const clusters = computed(() => clustersStore.clusters);
+const clusters = computed(() => {
+  const data = clustersStore.clusters.map((el) => ({
+    id: el.id,
+    text: Object.getOwnPropertyNames(el.cluster).join(", "),
+  }));
+  console.log(data);
+  return data;
+});
 
 // Toggle Cluster Option
 const toggleClusterOption = () => {
@@ -141,6 +162,7 @@ const toggleClusterOption = () => {
 
 // Handle form submission
 const handleSubmit = async () => {
+  console.log("handle submit");
   errorMessage.value = "";
 
   // Validate word input
@@ -150,40 +172,16 @@ const handleSubmit = async () => {
   }
 
   try {
-    let clusterId;
-
-    if (clusterOption.value === "existing") {
-      // Validate existing cluster selection
-      if (!selectedClusterId.value) {
-        errorMessage.value = "Please select an existing cluster.";
-        return;
-      }
-      clusterId = selectedClusterId.value;
-    } else if (clusterOption.value === "new") {
-      // Validate new cluster name
-      if (!newClusterName.value.trim()) {
-        errorMessage.value = "Please enter a new cluster name.";
-        return;
-      }
-      // Add new cluster
-      const newCluster = await clustersStore.addCluster({
-        name: newClusterName.value.trim(),
-      });
-      clusterId = newCluster.id;
-    }
-
     // Add new word
     await wordsStore.addWord({
       irish: word.value.trim(),
-      cluster_id: clusterId,
-      // Include other necessary fields if any
+      english: meaningModel.value.trim(), // Optional
+      cluster_id: selectedClusterId.value, // Optional
     });
 
     // Reset form
-    word.value = "";
-    selectedClusterId.value = "";
-    newClusterName.value = "";
-    clusterOption.value = "existing";
+    resetForm();
+    await clustersStore.fetchClusters();
 
     // Optionally, display a success message or perform additional actions
   } catch (error) {
@@ -193,6 +191,15 @@ const handleSubmit = async () => {
       clustersStore.errorMessage ||
       "An error occurred.";
   }
+};
+
+const resetForm = () => {
+  // Reset form
+  word.value = "";
+  meaningModel.value = "";
+  selectedClusterId.value = "";
+  newClusterName.value = "";
+  clusterOption.value = "existing";
 };
 </script>
   

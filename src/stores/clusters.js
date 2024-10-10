@@ -1,5 +1,5 @@
 // src/stores/clusters.js
-import apiClient from "@/plugins/axios"; // Import your Axios instance
+import { createCluster, fetchClusters } from "@/services/clusterService";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -10,11 +10,12 @@ export const useClustersStore = defineStore("clusters", () => {
   const errorMessage = ref("");
 
   // Actions
-  const fetchClusters = async () => {
+  const getClusters = async () => {
     isLoading.value = true;
     errorMessage.value = "";
     try {
-      const response = await apiClient.get("/clusters/");
+      const response = await fetchClusters();
+      console.log(response.data);
       clusters.value = response.data;
     } catch (error) {
       console.error("Error fetching clusters:", error);
@@ -29,7 +30,7 @@ export const useClustersStore = defineStore("clusters", () => {
     errorMessage.value = "";
 
     try {
-      const response = await apiClient.post("/clusters/", clusterData);
+      const response = await createCluster(clusterData);
       clusters.value.push(response.data);
       return response.data; // Return the new cluster for further use
     } catch (error) {
@@ -45,6 +46,7 @@ export const useClustersStore = defineStore("clusters", () => {
     clusters,
     isLoading,
     errorMessage,
-    fetchClusters,
+    fetchClusters: getClusters,
+    addCluster,
   };
 });

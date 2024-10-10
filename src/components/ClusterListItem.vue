@@ -1,37 +1,54 @@
 <template>
-  <div class="mb-6 p-4 border rounded-lg shadow-sm bg-gray-50">
-    <p class="text-xl font-medium mb-3">
-      {{ item.word }} -
-      <span class="text-gray-600 italic">{{ item.meaning }}</span>
-    </p>
-    <div>
-      <router-link
-        :to="{ name: 'ReassignCluster', params: { id: item.id } }"
-        class="reassign-link"
-      >
-        Reassign
-      </router-link>
+  <div
+    class="flex flex-col p-2 border border-gray-200 rounded-md shadow-sm bg-white"
+  >
+    <!-- Word and Meaning -->
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-800">
+          {{ item.word }} -
+          <span class="text-gray-500 italic text-xs">{{ item.meaning }}</span>
+        </p>
+      </div>
+      <div class="flex space-x-2">
+        <!-- Reassign Cluster Link -->
+        <router-link
+          :to="{ name: 'ReassignCluster', params: { id: item.id } }"
+          class="text-indigo-500 text-xs hover:underline"
+        >
+          Reassign
+        </router-link>
+
+        <!-- Remove Button -->
+        <button
+          class="text-red-500 text-xs hover:underline"
+          @click="emitRemoveWord()"
+        >
+          Remove
+        </button>
+      </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+    <!-- Audio Buttons -->
+    <div class="flex flex-wrap mt-2 space-x-1">
       <button
         @click="playAudio(item, 'Connacht')"
         :disabled="!item.audio.Connacht || isPlaying"
-        class="flex-1 bg-blue-500 text-white py-2 px-4 rounded disabled:bg-blue-300 hover:bg-blue-600 transition-colors"
+        class="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600 disabled:bg-blue-300 transition-colors"
       >
         Connacht
       </button>
       <button
         @click="playAudio(item, 'Munster')"
         :disabled="!item.audio.Munster || isPlaying"
-        class="flex-1 bg-green-500 text-white py-2 px-4 rounded disabled:bg-green-300 hover:bg-green-600 transition-colors"
+        class="bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600 disabled:bg-green-300 transition-colors"
       >
         Munster
       </button>
       <button
         @click="playAudio(item, 'Ulster')"
         :disabled="!item.audio.Ulster || isPlaying"
-        class="flex-1 bg-red-500 text-white py-2 px-4 rounded disabled:bg-red-300 hover:bg-red-600 transition-colors"
+        class="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600 disabled:bg-red-300 transition-colors"
       >
         Ulster
       </button>
@@ -63,10 +80,14 @@ const props = defineProps<{
   item: Item;
 }>();
 
-const emits = defineEmits(["audioFailure"]);
+const emits = defineEmits(["audioFailure", "removeWord"]);
 
 const emitAudioFailure = (region: keyof AudioSources) => {
   emits("audioFailure", region);
+};
+
+const emitRemoveWord = () => {
+  emits("removeWord", props.item);
 };
 
 // Initialize the toast

@@ -9,7 +9,16 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
+import { useToast } from "vue-toastification";
+import { setToastInstance } from "@/plugins/axios";
 import TheSidebar from "@/components/TheSidebar.vue";
+
+const toast = useToast();
+
+onMounted(() => {
+  setToastInstance(toast);
+});
 </script>
 
 <style>

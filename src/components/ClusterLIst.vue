@@ -1,11 +1,11 @@
 <template>
   <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-3xl">
-      <h1 class="text-3xl font-bold mb-6 text-center text-indigo-600">
+    <div class="bg-white shadow-lg rounded-lg p-4 w-full max-w-3xl">
+      <h1 class="text-2xl font-bold mb-4 text-center text-indigo-600">
         Irish Word Audio Player
       </h1>
 
-      <form @submit.prevent="searchWord" class="mb-8">
+      <form @submit.prevent="searchWord" class="mb-6">
         <vue3-simple-typeahead
           id="typeahead_id"
           placeholder="Enter an Irish word"
@@ -20,7 +20,7 @@
           v-model="simpleTypeaheadModel"
         >
           <template #list-header>
-            <div class="px-4 py-2 text-indigo-500 font-semibold">
+            <div class="px-3 py-1 text-indigo-500 font-semibold">
               Suggestions
             </div>
           </template>
@@ -28,19 +28,19 @@
             <span v-html="highlightMatch(slot.item)"></span>
           </template>
           <template #list-footer>
-            <div class="px-4 py-2 text-gray-500">End of Suggestions</div>
+            <div class="px-3 py-1 text-gray-500">End of Suggestions</div>
           </template>
         </vue3-simple-typeahead>
         <button
           type="submit"
-          class="mt-4 w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition-colors"
+          class="mt-2 w-full bg-indigo-500 text-white py-1 px-3 rounded hover:bg-indigo-600 transition-colors text-sm"
         >
           Search
         </button>
       </form>
 
       <div v-if="clusterId">
-        <h2 class="text-2xl font-semibold mb-6 text-center">
+        <h2 class="text-xl font-semibold mb-4 text-center">
           {{
             simpleTypeaheadModel
               ? `Audio Options for Cluster Containing "${inputWord}"`
@@ -48,18 +48,20 @@
           }}
         </h2>
 
-        <div class="space-y-4">
+        <div class="space-y-2">
           <ClusterListItem
             v-for="item in wordsInSameCluster"
             :key="item.id"
             :item="item"
+            :is-playing="isPlaying"
             @audioFailure="(ev) => handleAudioFailure(ev, item)"
+            @removeWord="handleRemoveWord"
           />
         </div>
       </div>
 
       <div v-else-if="searched" class="text-center">
-        <p class="text-red-500 text-lg">
+        <p class="text-red-500 text-sm">
           No results found for "{{ inputWord }}"
         </p>
       </div>
@@ -74,6 +76,8 @@ import apiClient from "@/plugins/axios"; // Import your Axios instance
 import { Howl } from "howler";
 import { useToast } from "vue-toastification"; // Import useToast
 import ClusterListItem from "@/components/ClusterListItem.vue";
+import { useWordsStore } from "@/stores/words";
+const wordsStore = useWordsStore();
 
 // Initialize toast
 const toast = useToast();
@@ -124,6 +128,28 @@ watch(clusterId, (newValue, oldValue) => {
 const handleAudioFailure = (region, item) => {
   if (region in item?.audio) {
     item.audio[region] = false;
+  }
+};
+
+/**
+ * User clicks [remove word]
+ * @param id
+ */
+const handleRemoveWord = async (item) => {
+  console.log("remove word with id", item.id);
+  if (
+    !confirm("Are you sure you want to remove this word from this cluster?")
+  ) {
+    return;
+  }
+
+  try {
+    const response = await apiClient.delete(`/words/${item.id}`);
+    await wordsStore.fetchWords();
+
+    console.log(response);
+  } catch (e) {
+    console.error(e);
   }
 };
 

@@ -26,7 +26,7 @@
           exact-active-class="active-link"
           active-class="active-link"
         >
-          Cluster View
+          Cluster Audio View
         </router-link>
       </li>
       <li>
