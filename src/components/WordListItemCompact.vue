@@ -68,7 +68,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["toggleClusterVisibilityClicked"]);
+const emits = defineEmits(["toggleClusterVisibilityClicked", "removeWord"]);
 
 const emitToggleClusterVisibilityClick = () => {
   emits("toggleClusterVisibilityClicked", props.word);

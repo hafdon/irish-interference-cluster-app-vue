@@ -1,3 +1,4 @@
+import { createPinia } from "pinia";
 import { createApp } from "vue";
 import SimpleTypeahead from "vue3-simple-typeahead";
 import "vue3-simple-typeahead/dist/vue3-simple-typeahead.css"; //Optional default CSS
@@ -12,6 +13,7 @@ import "vue-toastification/dist/index.css";
 
 // Create Vue app
 const app = createApp(App);
+const pinia = createPinia();
 
 // Use Vue3SimpleTypeahead
 app.use(SimpleTypeahead);
@@ -32,6 +34,7 @@ app.use(Toast, {
   icon: true,
   rtl: false,
 });
+app.use(pinia);
 app.use(router);
 // Mount the app
 app.mount("#app");

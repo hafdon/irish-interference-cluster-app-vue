@@ -1,8 +1,12 @@
+<!-- ClusterCatalogItem.vue -->
 <template>
-  <div v-if="item">
-    <pre>{{ words }}</pre>
+  <div v-if="item" class="flex items-center justify-between px-2 py-1">
+    <div class="text-xs font-medium text-gray-700">{{ words }}</div>
   </div>
 </template>
+
+
+
 <script setup>
 import { computed } from "vue";
 
@@ -21,3 +25,6 @@ const words = computed(() =>
     : ""
 );
 </script>
+<style scoped>
+/* Optional: Additional styles if needed */
+</style>

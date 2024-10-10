@@ -1,53 +1,50 @@
 <template>
-  <div v-if="isLoading" class="loading-spinner">Loading...</div>
+  <div class="min-h-screen bg-gray-100 p-4">
+    <!-- Loading State -->
+    <LoadingSpinner v-if="clustersStore.isLoading" />
 
-  <div v-else>
-    <div>
-      <h2>All Clusters</h2>
-      <div v-for="cluster in clusters" :key="cluster.id">
-        <router-link :to="{ name: 'ClusterList', params: { id: cluster.id } }">
-          <ClusterCatalogItem :item="cluster"
-        /></router-link>
+    <!-- Content -->
+    <div v-else>
+      <div class="max-w-4xl mx-auto bg-white shadow rounded-lg">
+        <!-- Header -->
+        <h2 class="text-lg font-semibold text-gray-800 px-4 py-2 border-b">
+          All Clusters
+        </h2>
+
+        <!-- Cluster List -->
+        <ul class="divide-y divide-gray-200">
+          <li v-for="cluster in clusters" :key="cluster.id">
+            <router-link
+              :to="{ name: 'ClusterList', params: { id: cluster.id } }"
+              class="block hover:bg-gray-50 transition-colors duration-200"
+            >
+              <ClusterCatalogItem :item="cluster" />
+            </router-link>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
-<script setup>
+  
+  <script setup>
 import { ref, onMounted, computed } from "vue";
-import apiClient from "@/plugins/axios";
-
 import ClusterCatalogItem from "@/components/ClusterCatalogItem.vue";
+import LoadingSpinner from "@/components/LoadingSpinner.vue";
+import { useClustersStore } from "@/stores/clusters";
 
-const apiClusters = ref([]);
-const isLoading = ref(false);
+const clustersStore = useClustersStore();
 
 onMounted(() => {
-  isLoading.value = true;
-  fetchClusters();
+  clustersStore.fetchClusters();
 });
-
-const fetchClusters = async () => {
-  try {
-    const response = await apiClient.get("/clusters/");
-    console.log(response.data);
-    apiClusters.value = response.data;
-  } catch (e) {
-    console.error("Error fetching clusters:", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
 
 const clusters = computed(() => {
-  return apiClusters.value ?? [];
+  return clustersStore.clusters ?? [];
 });
 </script>
-
-<style scoped>
-.loading-spinner {
-  text-align: center;
-  font-size: 1em;
-  color: #5bc0de;
-  margin-top: 20px;
-}
+  
+  <style scoped>
+/* Optional: Additional styles if needed */
 </style>
+  
