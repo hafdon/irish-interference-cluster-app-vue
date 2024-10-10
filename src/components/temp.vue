@@ -31,15 +31,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, Ref } from "vue";
 import { Howl, HowlOptions } from "howler"; // Import types from howler
-import { useToast } from "vue-toastification"; // Import the useToast composable
+import { useToast } from "vue-toastification";
 
 // Define the structure of the audio object
 interface AudioSources {
-  Connacht: boolean;
-  Munster: boolean;
-  Ulster: boolean;
+  Connacht?: string;
+  Munster?: string;
+  Ulster?: string;
 }
 
 // Define the structure of the item prop
@@ -54,16 +54,11 @@ const props = defineProps<{
   item: Item;
 }>();
 
-const emits = defineEmits(["audioFailure"]);
-
-const emitAudioFailure = (region: keyof AudioSources) => {
-  emits("audioFailure", region);
-};
-
-// Initialize the toast
+// Initialize toast
 const toast = useToast();
 
-const isPlaying = ref(false);
+// Reactive state
+const isPlaying: Ref<boolean> = ref(false);
 let currentSound: Howl | null = null;
 
 // Function to construct audio URL based on word and region
@@ -91,7 +86,7 @@ const playAudio = (item: Item, region: keyof AudioSources) => {
     currentSound.stop();
   }
 
-  // Play new sound
+  // Define Howl options with type annotations
   const howlOptions: HowlOptions = {
     src: [url],
     html5: true, // Enable to stream large files
@@ -110,7 +105,6 @@ const playAudio = (item: Item, region: keyof AudioSources) => {
       );
       // Disable the button as audio failed to load
       item.audio[region] = false;
-      emitAudioFailure(region);
     },
     onplayerror: (id: number, error: any) => {
       console.error("Play error:", error);
@@ -121,10 +115,10 @@ const playAudio = (item: Item, region: keyof AudioSources) => {
       );
       // Disable the button as audio failed to play
       item.audio[region] = false;
-      emitAudioFailure(region);
     },
   };
 
+  // Initialize and play the sound
   currentSound = new Howl(howlOptions);
   currentSound.play();
 };

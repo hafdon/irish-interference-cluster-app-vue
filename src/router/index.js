@@ -1,5 +1,6 @@
 // src/router/index.js
 import AssignClusterForm from "@/components/AssignClusterForm.vue";
+import ClusterCatalog from "@/components/ClusterCatalog.vue";
 import ClusterList from "@/components/ClusterList.vue";
 import WordList from "@/components/WordList.vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -17,9 +18,15 @@ const routes = [
     props: true, // Allows route params to be passed as props
   },
   {
-    path: "/cluster/",
+    path: "/cluster/:id?",
     name: "ClusterList",
     component: ClusterList,
+    props: true, // Allows route params to be passed as props
+  },
+  {
+    path: "/cluster-catalog/",
+    name: "ClusterCatalog",
+    component: ClusterCatalog,
     props: true, // Allows route params to be passed as props
   },
 

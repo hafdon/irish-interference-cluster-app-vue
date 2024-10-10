@@ -21,6 +21,7 @@
             :word="word"
             :clustersFiltered="filterClusterId !== null"
             @toggleClusterVisibilityClicked="handleToggleClusterVisibilityClick"
+            @removeWord="handleRemoveWord"
           />
         </li>
       </ul>
@@ -52,6 +53,23 @@ const handleToggleClusterVisibilityClick = (word) => {
   const clusterId = word.cluster_id;
   if (clusterId) {
     filterClusterId.value = filterClusterId.value === null ? clusterId : null;
+  }
+};
+
+const handleRemoveWord = async (id) => {
+  console.log("remove word with id", id);
+  if (
+    !confirm("Are you sure you want to remove this word from this cluster?")
+  ) {
+    return;
+  }
+
+  try {
+    const response = await apiClient.delete(`/words/${id}`);
+
+    console.log(response);
+  } catch (e) {
+    console.error(e);
   }
 };
 

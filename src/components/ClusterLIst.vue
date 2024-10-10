@@ -17,6 +17,7 @@
           @on-focus="handleFocus"
           @on-blur="handleBlur"
           class="w-full"
+          v-model="simpleTypeaheadModel"
         >
           <template #list-header>
             <div class="px-4 py-2 text-indigo-500 font-semibold">
@@ -38,8 +39,14 @@
         </button>
       </form>
 
-      <div v-if="wordsInSameCluster.length">
-        <h2 class="text-2xl font-semibold mb-6 text-center">
+      <div v-if="clusterId && !simpleTypeaheadModel">
+        <h2
+          v-if="!simpleTypeaheadModel"
+          class="text-2xl font-semibold mb-6 text-center"
+        >
+          Cluster
+        </h2>
+        <h2 v-else class="text-2xl font-semibold mb-6 text-center">
           Audio Options for Cluster Containing "{{ inputWord }}"
         </h2>
 
@@ -48,6 +55,7 @@
             v-for="item in wordsInSameCluster"
             :key="item.word"
             :item="item"
+            @audioFailure="(ev) => handleAudioFailure(ev, item)"
           />
         </div>
       </div>
@@ -62,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, reactive } from "vue";
+import { ref, onMounted, computed, reactive, watch } from "vue";
 import apiClient from "@/plugins/axios"; // Import your Axios instance
 import { Howl } from "howler";
 import { useToast } from "vue-toastification"; // Import useToast
@@ -79,21 +87,40 @@ const isPlaying = ref(false);
 let currentSound = null;
 const apiDataAllWords = ref([]);
 
+const props = defineProps({
+  // router parameter
+  id: { type: String, required: false },
+});
+
+const clusterId = ref(props.id);
+const simpleTypeaheadModel = ref("");
+
+// Watch for changes in the prop and update the ref accordingly
+// Watch the `name` ref for changes
+watch(clusterId, (newValue, oldValue) => {
+  console.log(`clusterId changed from "${oldValue}" to "${newValue}"`);
+});
+
+const handleAudioFailure = (region, item) => {
+  if (region in item?.audio) {
+    item.audio[region] = false;
+  }
+};
+
 // Fetch all words on initial load for autocomplete
+// Word is in JSON format:
+/**
+ * {
+ *      "irish": "aodh",
+ *      "english": "inflammation",
+ *      "cluster_id": null,
+ *      "id": 3
+ *  }
+ **/
 const fetchAllWords = async () => {
   try {
     const response = await apiClient.get(`/words/`); // Now run locally!
     apiDataAllWords.value = response.data;
-    /**
-     * [
-    {
-        "irish": "aodh",
-        "english": "inflammation",
-        "cluster_id": null,
-        "id": 3
-    }
-]
-     */
   } catch (error) {
     console.error("Error fetching all words for autocomplete:", error);
   }
@@ -118,12 +145,26 @@ onMounted(() => {
 // Autocomplete Handlers
 const handleInput = (event) => {
   // You can handle input events if needed
+  console.log(event);
+  if (event.input === "") {
+    console.log("setting clusterId to null");
+    clusterId.value = null;
+  }
 };
 
 // Set the v-model of the typeahead
 // (This causes automatic searching)
 const handleSelect = (selectedItem) => {
-  inputWord.value = selectedItem;
+  inputWord.value = selectedItem.trim().toLowerCase();
+
+  const matchingWordObject = apiDataAllWords.value.filter(
+    (wordObj) => wordObj.irish.trim().toLowerCase() === inputWord.value
+  );
+
+  if (matchingWordObject.length) {
+    console.log(matchingWordObject[0]);
+    clusterId.value = matchingWordObject[0].cluster_id;
+  }
 };
 
 const handleFocus = (event) => {
@@ -153,104 +194,25 @@ function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * Return all words matching the clusterId, or []
+ */
 const wordsInSameCluster = computed(() => {
-  console.log("wordsInSameCluster");
-
-  const word = inputWord.value.trim().toLowerCase();
-  console.log("word", word);
-  let clusterId = null;
-
-  if (!word) return [];
-
-  const matchingWordObject = apiDataAllWords.value.filter(
-    (wordObj) => wordObj.irish === word
-  );
-
-  console.log("matchingWordObject", matchingWordObject);
-
-  if (matchingWordObject.length) {
-    console.log("setting clusterId", clusterId);
-
-    clusterId = matchingWordObject[0].cluster_id;
-  }
-
-  console.log("clusterId", clusterId);
-
-  if (clusterId) {
-    return apiDataAllWords.value
-      .filter((wordObj) => wordObj.cluster_id === clusterId)
-      .map((el) => ({
-        word: el.irish,
-        meaning: el.english,
-        audio: {
-          Connacht: true, // Assume audio is available initially
-          Munster: true,
-          Ulster: true,
-        },
-      }));
-  }
-  return [];
+  console.log("computed wordsInSameCluster", clusterId.value);
+  return clusterId.value
+    ? apiDataAllWords.value
+        .filter((wordObj) => wordObj.cluster_id == clusterId.value) // is it a string or a number
+        .map((el) => ({
+          word: el.irish,
+          meaning: el.english,
+          audio: {
+            Connacht: true, // Assume audio is available initially
+            Munster: true,
+            Ulster: true,
+          },
+        }))
+    : [];
 });
-
-// Function to construct audio URL based on word and region
-const getAudioURL = (word, region) => {
-  const formattedWord = word.trim().toLowerCase();
-  switch (region) {
-    case "Connacht":
-      return `https://www.teanglann.ie/CanC/${formattedWord}.mp3`;
-    case "Munster":
-      return `https://www.teanglann.ie/CanM/${formattedWord}.mp3`;
-    case "Ulster":
-      return `https://www.teanglann.ie/CanU/${formattedWord}.mp3`;
-    default:
-      return "";
-  }
-};
-
-// Function to play audio based on word and region
-const playAudio = (item, region) => {
-  const word = item.word.trim().toLowerCase();
-  const url = getAudioURL(word, region);
-
-  // Stop previous sound if playing
-  if (currentSound) {
-    currentSound.stop();
-  }
-
-  // Play new sound
-  currentSound = new Howl({
-    src: [url],
-    html5: true, // Enable to stream large files
-    onplay: () => {
-      isPlaying.value = true;
-    },
-    onend: () => {
-      isPlaying.value = false;
-    },
-    onloaderror: (id, error) => {
-      console.error("Load error:", error);
-      isPlaying.value = false;
-      // Use toast to inform the user about the error
-      toast.error(
-        `Failed to load audio for "${item.word}" in region "${region}". The button will be disabled.`
-      );
-      // Disable the button as audio failed to load
-      item.audio[region] = false;
-    },
-    onplayerror: (id, error) => {
-      console.error("Play error:", error);
-      isPlaying.value = false;
-      // Use toast to inform the user about the error
-      toast.error(
-        `Failed to play audio for "${item.word}" in region "${region}". The button will be disabled.`
-      );
-      // Disable the button as audio failed to play
-      item.audio[region] = false;
-    },
-  });
-
-  currentSound.play();
-};
 </script>
 
 <style scoped>

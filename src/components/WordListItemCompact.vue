@@ -38,7 +38,7 @@
     <span>
       <button
         class="text-red-500 hover:underline text-xs px-1 py-0.5"
-        @click="emitRemoveWord(word.id)"
+        @click="emitRemoveWord()"
       >
         Remove
       </button>
@@ -60,7 +60,11 @@ const props = defineProps({
 
 const emits = defineEmits(["toggleClusterVisibilityClicked"]);
 
-const emitToggleClusterVisibililtyClick = () => {
+const emitToggleClusterVisibilityClick = () => {
   emits("toggleClusterVisibilityClicked", props.word);
+};
+
+const emitRemoveWord = () => {
+  emits("removeWord", props.word.id);
 };
 </script>

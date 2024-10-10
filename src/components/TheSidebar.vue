@@ -20,6 +20,15 @@
           Cluster View
         </router-link>
       </li>
+      <li>
+        <router-link
+          to="/cluster-catalog"
+          exact-active-class="active-link"
+          active-class="active-link"
+        >
+          Cluster Catalog
+        </router-link>
+      </li>
       <!-- Add more navigation links as needed -->
     </ul>
   </nav>
