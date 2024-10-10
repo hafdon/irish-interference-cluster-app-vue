@@ -39,18 +39,16 @@
         </button>
       </form>
 
-      <div v-if="clusterId && !simpleTypeaheadModel">
-        <h2
-          v-if="!simpleTypeaheadModel"
-          class="text-2xl font-semibold mb-6 text-center"
-        >
-          Cluster
-        </h2>
-        <h2 v-else class="text-2xl font-semibold mb-6 text-center">
-          Audio Options for Cluster Containing "{{ inputWord }}"
+      <div v-if="clusterId">
+        <h2 class="text-2xl font-semibold mb-6 text-center">
+          {{
+            simpleTypeaheadModel
+              ? `Audio Options for Cluster Containing "${inputWord}"`
+              : "Cluster"
+          }}
         </h2>
 
-        <div>
+        <div class="space-y-4">
           <ClusterListItem
             v-for="item in wordsInSameCluster"
             :key="item.word"
@@ -60,8 +58,8 @@
         </div>
       </div>
 
-      <div v-else-if="searched">
-        <p class="text-center text-red-500 text-lg">
+      <div v-else-if="searched" class="text-center">
+        <p class="text-red-500 text-lg">
           No results found for "{{ inputWord }}"
         </p>
       </div>
