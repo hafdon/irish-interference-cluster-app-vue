@@ -57,8 +57,9 @@
 </template>
 
 <script setup lang="ts">
+import type { HowlOptions } from "howler";
+import { Howl } from "howler"; // Import types from howler
 import { ref } from "vue";
-import { Howl, HowlOptions } from "howler"; // Import types from howler
 import { useToast } from "vue-toastification"; // Import the useToast composable
 
 // Define the structure of the audio object
