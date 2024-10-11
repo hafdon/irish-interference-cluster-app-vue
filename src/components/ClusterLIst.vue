@@ -53,7 +53,6 @@
             v-for="item in wordsInSameCluster"
             :key="item.id"
             :item="item"
-            :is-playing="isPlaying"
             @audioFailure="(ev) => handleAudioFailure(ev, item)"
             @removeWord="handleRemoveWord"
           />
@@ -87,10 +86,7 @@ const route = useRoute();
 
 // State variables
 const inputWord = ref("");
-// const words = ref([]);
 const searched = ref(false); // Not sure how this gets used; it is never modified
-// const isPlaying = ref(false);
-// let currentSound = null;
 const apiDataAllWords = ref([]);
 
 const props = defineProps({

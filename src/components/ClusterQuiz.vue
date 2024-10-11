@@ -37,8 +37,27 @@
           />
         </div>
 
+        <!-- Multiple-Choice Options -->
+        <div class="options-section mb-4">
+          <p class="block text-sm font-medium text-gray-700 mb-2">
+            Select the correct English meaning:
+          </p>
+          <div class="options-grid grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              v-for="option in currentOptions"
+              :key="option"
+              @click="selectAnswer(option)"
+              :disabled="isOptionSelected"
+              :class="getOptionClass(option)"
+              class="w-full text-left text-sm px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none transition-colors"
+            >
+              {{ option }}
+            </button>
+          </div>
+        </div>
+
         <!-- Submit Button -->
-        <div class="submit-section mb-4">
+        <!-- <div class="submit-section mb-4">
           <button
             @click="submitAnswer"
             :disabled="isSubmitting"
@@ -46,7 +65,7 @@
           >
             Submit
           </button>
-        </div>
+        </div>-->
 
         <!-- Feedback Message -->
         <div v-if="feedback" :class="feedbackClass" class="mb-4 p-2 rounded-md">
@@ -97,6 +116,20 @@ import { useToast } from "vue-toastification";
 import { useAudio } from "@/composables/useAudio";
 import { useClustersStore } from "@/stores/clusters";
 
+import { shuffle } from "lodash-es";
+
+type Word = {
+  irish: string;
+  english: any;
+  id: number;
+  cluster_id: any;
+  audio: {
+    Connacht: boolean;
+    Munster: boolean;
+    Ulster: boolean;
+  };
+};
+
 const { isPlaying, playAudio } = useAudio();
 
 const clustersStore = useClustersStore();
@@ -104,6 +137,14 @@ const clustersStore = useClustersStore();
 onMounted(() => {
   clustersStore.fetchClusters();
 });
+
+const currentOptions = computed(() =>
+  shuffle(words.value.map((el: Word) => el.english))
+);
+
+const getOptionClass = (option: string) => "";
+
+const isOptionSelected = computed(() => false);
 
 const clusters = computed(() => {
   const data = clustersStore.clusters ?? [];
@@ -177,6 +218,32 @@ const getAudioURL = (word: string, region: Region): string => {
   }
 };
 
+const selectAnswer = (option: string) => {
+  if (currentWord.value.english === option) {
+    feedback.value = "Correct!";
+    feedbackClass.value = "text-green-600 bg-green-100";
+    correctAnswers.value += 1;
+  } else {
+    feedback.value = `Incorrect. The correct meaning is "${currentWord.value.english}".`;
+    feedbackClass.value = "text-red-600 bg-red-100";
+  }
+
+  // Proceed to next word after a short delay
+  setTimeout(() => {
+    feedback.value = "";
+    isSubmitting.value = false;
+    currentIndex.value += 1;
+
+    // If quiz is complete, emit an event
+    if (currentIndex.value >= shuffledWords.value.length) {
+      emits("quizComplete", {
+        correct: correctAnswers.value,
+        total: shuffledWords.value.length,
+      });
+    }
+  }, 1500);
+};
+
 // Function to submit the user's answer
 const submitAnswer = () => {
   if (!currentWord.value) return;
@@ -225,7 +292,7 @@ const feedbackClass = ref("");
 
 // Optionally, shuffle the words for each quiz session
 // You can uncomment the following lines if you want to shuffle
-import { shuffle } from "lodash-es";
+
 const shuffledWords = ref(shuffle(words.value));
 
 // Then, use `shuffledWords.value` instead of `props.words` throughout
