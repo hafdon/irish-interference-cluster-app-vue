@@ -22,23 +22,6 @@
           </button>
         </div>
 
-        <!-- User Input for Meaning -->
-        <!--
-        <div class="input-section mb-4">
-          <label for="meaning" class="block text-sm font-medium text-gray-700">
-            Enter the English meaning:
-          </label>
-          <input
-            id="meaning"
-            v-model="userAnswer"
-            @keyup.enter="submitAnswer"
-            type="text"
-            class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Type your answer here..."
-          />
-        </div>
-        -->
-
         <!-- Multiple-Choice Options -->
         <div class="options-section mb-4">
           <p class="block text-sm font-medium text-gray-700 mb-2">
@@ -58,17 +41,6 @@
           </div>
         </div>
 
-        <!-- Submit Button -->
-        <!-- <div class="submit-section mb-4">
-          <button
-            @click="submitAnswer"
-            :disabled="isSubmitting"
-            class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 disabled:bg-indigo-300 transition-colors"
-          >
-            Submit
-          </button>
-        </div>-->
-
         <!-- Feedback Message -->
         <div v-if="feedback" :class="feedbackClass" class="mb-4 p-2 rounded-md">
           {{ feedback }}
@@ -76,7 +48,7 @@
       </div>
 
       <!-- Quiz Progress -->
-      <div class="progress-section mb-4">
+      <!-- <div class="progress-section mb-4">
         <p class="text-sm text-gray-700">
           Question {{ currentIndex + 1 }} of {{ words.length }}
         </p>
@@ -86,7 +58,10 @@
             :style="{ width: progressPercentage + '%' }"
           ></div>
         </div>
-      </div>
+      </div>-->
+      <ProgressBar :index="currentIndex + 1" :length="words.length">
+        Question {{ currentIndex + 1 }} of {{ words.length }}
+      </ProgressBar>
     </template>
 
     <template v-else>
@@ -206,10 +181,10 @@ const audioButtonClasses: Record<Region, string> = {
 // The word being displpayed
 const currentWord = computed(() => shuffledWords.value[currentIndex.value]);
 
-// Calculates progress of quiz
-const progressPercentage = computed(() => {
-  return (currentIndex.value / shuffledWords.value.length) * 100;
-});
+// // Calculates progress of quiz
+// const progressPercentage = computed(() => {
+//   return (currentIndex.value / shuffledWords.value.length) * 100;
+// });
 
 // Function to construct audio URL based on word and region
 const getAudioURL = (word: string, region: Region): string => {
