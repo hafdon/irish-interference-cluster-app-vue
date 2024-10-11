@@ -23,6 +23,7 @@
         </div>
 
         <!-- User Input for Meaning -->
+        <!--
         <div class="input-section mb-4">
           <label for="meaning" class="block text-sm font-medium text-gray-700">
             Enter the English meaning:
@@ -36,6 +37,7 @@
             placeholder="Type your answer here..."
           />
         </div>
+        -->
 
         <!-- Multiple-Choice Options -->
         <div class="options-section mb-4">
@@ -104,6 +106,12 @@
         </button>
       </div>
     </template>
+    <router-link
+      :to="{ name: 'ClusterList', params: { id: clusterId } }"
+      class="block text-center bg-gray-500 text-white px-2 py-1 rounded-md hover:bg-gray-600 transition-colors duration-200"
+    >
+      To Cluster Audio
+    </router-link>
   </div>
 </template>
 

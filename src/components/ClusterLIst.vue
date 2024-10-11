@@ -64,6 +64,15 @@
           No results found for "{{ inputWord }}"
         </p>
       </div>
+
+      <div class="py-2">
+        <router-link
+          :to="{ name: 'ClusterQuiz', params: { id: clusterId } }"
+          class="block bg-gray-500 text-center shadow-md font-semibold text-white px-2 py-1 rounded-md hover:bg-gray-600 transition-colors duration-200"
+        >
+          Cluster Quiz
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
