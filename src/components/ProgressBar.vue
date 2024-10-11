@@ -10,7 +10,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {computed} from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps({
     index: {
@@ -26,7 +26,7 @@ const props = defineProps({
 
 // Calculates progress of quiz
 const progressPercentage = computed(() => {
-  return (props.index / props.length * 100;
+  return props.index / props.length * 100
 });
 
 </script>
