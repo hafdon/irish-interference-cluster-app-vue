@@ -1,16 +1,16 @@
 // src/types/Word.ts
 
-export interface Word {
-    id: number;
-    irish: string;
-    english?: string;
-    cluster_id?: number;
-    audio?: {
-      Connacht?: string;
-      Munster?: string;
-      Ulster?: string;
-    };
-  }
+  export interface Word {
+      id: number;
+      irish: string;
+      english?: string;
+      cluster_id?: number;
+      audio?: {
+        Connacht?: string;
+        Munster?: string;
+        Ulster?: string;
+      };
+    }
   
   export interface WordCreate {
     irish: string;

@@ -88,6 +88,7 @@
 
       <!-- New Cluster Input -->
       <div v-if="clusterOption === 'new'">
+        <!--
         <label for="newCluster" class="block text-sm font-medium text-gray-700"
           >New Cluster Name</label
         >
@@ -98,7 +99,7 @@
           required
           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
           placeholder="Enter new cluster name"
-        />
+        />-->
       </div>
 
       <!-- Error Message -->
@@ -121,9 +122,9 @@
 </template>
   
   <script setup>
-import { ref, computed, onMounted } from "vue";
-import { useWordsStore } from "@/stores/words";
 import { useClustersStore } from "@/stores/clusters";
+import { useWordsStore } from "@/stores/words";
+import { computed, onMounted, ref } from "vue";
 
 const wordsStore = useWordsStore();
 const clustersStore = useClustersStore();
@@ -173,11 +174,12 @@ const handleSubmit = async () => {
 
   try {
     // Add new word
-    await wordsStore.addWord({
+    const body = {
       irish: word.value.trim(),
       english: meaningModel.value.trim(), // Optional
-      cluster_id: selectedClusterId.value, // Optional
-    });
+      cluster_id: selectedClusterId.value ?? null, // Optional
+    };
+    await wordsStore.addWord(body);
 
     // Reset form
     resetForm();

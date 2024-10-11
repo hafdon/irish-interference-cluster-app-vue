@@ -42,11 +42,42 @@ export const useClustersStore = defineStore("clusters", () => {
     }
   };
 
+  const wordsInSameCluster = (clusterId) => {
+    console.log("wordsInSameCluster", clusterId);
+
+    // guard
+    if (!clusterId) return [];
+
+    const cluster = clusters.value.filter(
+      (cluster) => cluster.id == clusterId
+    )?.[0]; // TODO is it a string or a number
+
+    if (!cluster) return [];
+
+    const words = Object.getOwnPropertyNames(cluster.cluster);
+
+    const result = words.map((el, idx) => ({
+      irish: el,
+      english: cluster.cluster[el],
+      id: idx + 1, // TODO This is just a fake index for now, won't connect to word in backend
+      cluster_id: clusterId,
+      audio: {
+        Connacht: true, // Assume audio is available initially
+        Munster: true,
+        Ulster: true,
+      },
+    }));
+
+    console.log("wordsInSameCluster returning", result);
+    return result;
+  };
+
   return {
     clusters,
     isLoading,
     errorMessage,
     fetchClusters: getClusters,
     addCluster,
+    wordsInSameCluster,
   };
 });

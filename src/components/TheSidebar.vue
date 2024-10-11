@@ -38,6 +38,15 @@
           Cluster Catalog
         </router-link>
       </li>
+      <li>
+        <router-link
+          to="/cluster-quiz"
+          exact-active-class="active-link"
+          active-class="active-link"
+        >
+          Cluster Quiz
+        </router-link>
+      </li>
       <!-- Add more navigation links as needed -->
     </ul>
   </nav>

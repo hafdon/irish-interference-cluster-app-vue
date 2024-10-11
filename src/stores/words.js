@@ -37,6 +37,13 @@ export const useWordsStore = defineStore("words", () => {
     try {
       console.log("wordData", wordData);
 
+      if (wordData.cluster_id.length === 0) {
+        // passing a blank string as cluster_id to backend gives aa 422 error
+        // so we have to manually set to null
+        wordData.cluster_id = null;
+      }
+      console.log("wordData", wordData);
+
       const response = await createWord(wordData);
       words.value.push(response.data);
     } catch (error) {

@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-    <div class="bg-white shadow-lg rounded-lg p-4 w-full max-w-3xl">
+  <div class="mi-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div class="bg-white shadow-lg rounded-lg p-4 w-full max-w-5xl">
       <h1 class="text-2xl font-bold mb-4 text-center text-indigo-600">
         Irish Word Audio Player
       </h1>
@@ -53,7 +53,6 @@
             v-for="item in wordsInSameCluster"
             :key="item.id"
             :item="item"
-            :is-playing="isPlaying"
             @audioFailure="(ev) => handleAudioFailure(ev, item)"
             @removeWord="handleRemoveWord"
           />
@@ -65,18 +64,26 @@
           No results found for "{{ inputWord }}"
         </p>
       </div>
+
+      <div class="py-2">
+        <router-link
+          :to="{ name: 'ClusterQuiz', params: { id: clusterId } }"
+          class="block bg-gray-500 text-center shadow-md font-semibold text-white px-2 py-1 rounded-md hover:bg-gray-600 transition-colors duration-200"
+        >
+          Cluster Quiz
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router"; // Import useRoute and useRouter
-import apiClient from "@/plugins/axios"; // Import your Axios instance
-import { Howl } from "howler";
-import { useToast } from "vue-toastification"; // Import useToast
 import ClusterListItem from "@/components/ClusterListItem.vue";
+import apiClient from "@/plugins/axios"; // Import your Axios instance
 import { useWordsStore } from "@/stores/words";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router"; // Import useRoute and useRouter
+import { useToast } from "vue-toastification"; // Import useToast
 const wordsStore = useWordsStore();
 
 // Initialize toast
@@ -88,10 +95,7 @@ const route = useRoute();
 
 // State variables
 const inputWord = ref("");
-// const words = ref([]);
 const searched = ref(false); // Not sure how this gets used; it is never modified
-// const isPlaying = ref(false);
-// let currentSound = null;
 const apiDataAllWords = ref([]);
 
 const props = defineProps({
