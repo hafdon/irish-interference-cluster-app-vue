@@ -37,7 +37,7 @@ const routes = [
     props: true, // Allows route params to be passed as props
   },
   {
-    path: "/cluster-quiz/",
+    path: "/cluster-quiz/:id?",
     name: "ClusterQuiz",
     component: ClusterQuizContainer,
     props: true, // Allows route params to be passed as props

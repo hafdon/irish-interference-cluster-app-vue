@@ -90,19 +90,42 @@
 
   
 <script setup lang="ts">
-import type { Word } from "@/types/Word";
 import { Howl } from "howler";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 
 import { useAudio } from "@/composables/useAudio";
+import { useClustersStore } from "@/stores/clusters";
 
 const { isPlaying, playAudio } = useAudio();
 
-// An array of words to be quizzed
+const clustersStore = useClustersStore();
+
+onMounted(() => {
+  clustersStore.fetchClusters();
+});
+
+const clusters = computed(() => {
+  const data = clustersStore.clusters ?? [];
+  console.log(data);
+  return data;
+});
+
+// Cluster id for words to be quizzed
 const props = defineProps<{
-  words: Word[];
+  clusterId: number | null;
 }>();
+
+const words = computed(() => {
+  if (props.clusterId) {
+    console.log("ClusterQuiz ", props.clusterId);
+    const result = clustersStore.wordsInSameCluster(props.clusterId);
+    console.log("ClusterQuiz words", result);
+    return result;
+  }
+  console.log("ClusterQuiz words returning []");
+  return [];
+});
 
 // Define emits if needed (e.g., to notify parent components)
 const emits = defineEmits<{
@@ -203,12 +226,12 @@ const feedbackClass = ref("");
 // Optionally, shuffle the words for each quiz session
 // You can uncomment the following lines if you want to shuffle
 import { shuffle } from "lodash-es";
-const shuffledWords = ref<Word[]>(shuffle(props.words));
+const shuffledWords = ref(shuffle(words.value));
 
 // Then, use `shuffledWords.value` instead of `props.words` throughout
 </script>
   
-  <style scoped>
+<style scoped>
 .word-quiz-container {
   max-width: 600px;
   margin: 0 auto;

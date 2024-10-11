@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-    <div class="bg-white shadow-lg rounded-lg p-4 w-full max-w-3xl">
+  <div class="mi-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div class="bg-white shadow-lg rounded-lg p-4 w-full max-w-5xl">
       <h1 class="text-2xl font-bold mb-4 text-center text-indigo-600">
         Irish Word Audio Player
       </h1>
@@ -70,13 +70,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router"; // Import useRoute and useRouter
-import apiClient from "@/plugins/axios"; // Import your Axios instance
-import { Howl } from "howler";
-import { useToast } from "vue-toastification"; // Import useToast
 import ClusterListItem from "@/components/ClusterListItem.vue";
+import apiClient from "@/plugins/axios"; // Import your Axios instance
 import { useWordsStore } from "@/stores/words";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router"; // Import useRoute and useRouter
+import { useToast } from "vue-toastification"; // Import useToast
 const wordsStore = useWordsStore();
 
 // Initialize toast
