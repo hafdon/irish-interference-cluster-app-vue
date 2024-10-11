@@ -29,11 +29,9 @@
           </p>
           <div class="options-grid grid grid-cols-1 sm:grid-cols-2 gap-2">
             <button
-              v-for="option in currentOptions"
+              v-for="option in multipleChoiceOptions"
               :key="option"
               @click="selectAnswer(option)"
-              :disabled="isOptionSelected"
-              :class="getOptionClass(option)"
               class="w-full text-left text-sm px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none transition-colors"
             >
               {{ option }}
@@ -47,18 +45,7 @@
         </div>
       </div>
 
-      <!-- Quiz Progress -->
-      <!-- <div class="progress-section mb-4">
-        <p class="text-sm text-gray-700">
-          Question {{ currentIndex + 1 }} of {{ words.length }}
-        </p>
-        <div class="w-full bg-gray-200 rounded-full h-2.5">
-          <div
-            class="bg-indigo-600 h-2.5 rounded-full"
-            :style="{ width: progressPercentage + '%' }"
-          ></div>
-        </div>
-      </div>-->
+      <!-- Quiz Progress Bar-->
       <ProgressBar :index="currentIndex + 1" :length="words.length">
         Question {{ currentIndex + 1 }} of {{ words.length }}
       </ProgressBar>
@@ -121,13 +108,9 @@ onMounted(() => {
   clustersStore.fetchClusters();
 });
 
-const currentOptions = computed(() =>
+const multipleChoiceOptions = computed(() =>
   shuffle(words.value.map((el: Word) => el.english))
 );
-
-const getOptionClass = (option: string) => "";
-
-const isOptionSelected = computed(() => false);
 
 const clusters = computed(() => {
   const data = clustersStore.clusters ?? [];

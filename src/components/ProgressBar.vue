@@ -24,7 +24,7 @@ const props = defineProps({
 
 })
 
-// Calculates progress of quiz
+// Calculates percentage of bar to show
 const progressPercentage = computed(() => {
   return props.index / props.length * 100
 });
