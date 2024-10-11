@@ -1,6 +1,6 @@
 <template>
   <div class="progress-section mb-4">
-    <p class="text-sm text-gray-700">Question {{ index }} of {{ length }}</p>
+    <p class="text-sm text-gray-700"><slot></slot></p>
     <div class="w-full bg-gray-200 rounded-full h-2.5">
       <div
         class="bg-indigo-600 h-2.5 rounded-full"
