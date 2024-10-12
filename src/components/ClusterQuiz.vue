@@ -1,15 +1,24 @@
 <template>
   <div class="word-quiz-container p-4 bg-gray-100 rounded-md shadow-md">
+    <button
+      @click="toggleMode"
+      class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors mb-4"
+    >
+      Switch to
+      {{ showIrishToEnglish ? "English to Irish" : "Irish to English" }}
+    </button>
+
     <!-- Conditional Rendering using <template> -->
     <template v-if="currentWord">
       <div class="current-word-card mb-4">
         <!-- Display the current word in Irish -->
         <h2 class="text-xl font-bold text-gray-800 mb-2">
-          {{ currentWord.irish }}
+          {{ showIrishToEnglish ? currentWord.irish : currentWord.english }}
         </h2>
 
         <!-- Audio Buttons -->
-        <div class="flex flex-wrap space-x-2 mb-4">
+        <div v-if="showIrishToEnglish" class="flex flex-wrap space-x-2 mb-4">
+          <!-- Audio buttons as before -->
           <button
             v-for="region in audioRegions"
             :key="region"
@@ -25,7 +34,8 @@
         <!-- Multiple-Choice Options -->
         <div class="options-section mb-4">
           <p class="block text-sm font-medium text-gray-700 mb-2">
-            Select the correct English meaning:
+            Select the correct
+            {{ showIrishToEnglish ? "English" : "Irish" }} meaning:
           </p>
           <div class="options-grid grid grid-cols-1 sm:grid-cols-2 gap-2">
             <button
@@ -100,6 +110,11 @@ type Word = {
 };
 
 const { isPlaying, playAudio } = useAudio();
+const showIrishToEnglish = ref(true); // Default mode is Irish to English
+const toggleMode = () => {
+  showIrishToEnglish.value = !showIrishToEnglish.value;
+  restartQuiz(); // Reset the quiz when mode changes
+};
 
 const clustersStore = useClustersStore();
 
@@ -107,9 +122,18 @@ onMounted(() => {
   clustersStore.fetchClusters();
 });
 
-const multipleChoiceOptions = computed(() =>
-  shuffle(words.value.map((el: Word) => el.english))
-);
+const multipleChoiceOptions = computed(() => {
+  const correctOption = showIrishToEnglish.value
+    ? currentWord.value.english
+    : currentWord.value.irish;
+  const optionsPool = words.value
+    .map((el: Word) => (showIrishToEnglish.value ? el.english : el.irish))
+    .filter((option) => option !== correctOption);
+
+  const incorrectOptions = shuffle(optionsPool).slice(0, 3);
+  const options = [...incorrectOptions, correctOption];
+  return shuffle(options);
+});
 
 // Cluster id for words to be quizzed
 const props = defineProps<{
@@ -156,12 +180,16 @@ const audioButtonClasses: Record<Region, string> = {
 const currentWord = computed(() => shuffledWords.value[currentIndex.value]);
 
 const selectAnswer = (option: string) => {
-  if (currentWord.value.english === option) {
+  const correctAnswer = showIrishToEnglish.value
+    ? currentWord.value.english
+    : currentWord.value.irish;
+
+  if (correctAnswer === option) {
     feedback.value = "Correct!";
     feedbackClass.value = "text-green-600 bg-green-100";
     correctAnswers.value += 1;
   } else {
-    feedback.value = `Incorrect. The correct meaning is "${currentWord.value.english}".`;
+    feedback.value = `Incorrect. The correct answer is "${correctAnswer}".`;
     feedbackClass.value = "text-red-600 bg-red-100";
   }
 
@@ -186,6 +214,7 @@ const restartQuiz = () => {
   currentIndex.value = 0;
   correctAnswers.value = 0;
   feedback.value = "";
+  shuffledWords.value = shuffle(words.value);
 };
 
 // Reactive class for feedback message
