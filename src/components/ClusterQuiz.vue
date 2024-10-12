@@ -79,7 +79,6 @@
 
   
 <script setup lang="ts">
-import { Howl } from "howler";
 import { computed, onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 
@@ -112,12 +111,6 @@ const multipleChoiceOptions = computed(() =>
   shuffle(words.value.map((el: Word) => el.english))
 );
 
-const clusters = computed(() => {
-  const data = clustersStore.clusters ?? [];
-  console.log(data);
-  return data;
-});
-
 // Cluster id for words to be quizzed
 const props = defineProps<{
   clusterId: number | null;
@@ -144,11 +137,9 @@ const toast = useToast();
 
 // Reactive state variables
 const currentIndex = ref(0); // current word index
-const userAnswer = ref(""); // user's input
 const feedback = ref(""); // feedback message to user
 const isSubmitting = ref(false); // answer is being processed
 const correctAnswers = ref(0); // number of correct answers
-const currentSound = ref<Howl | null>(null); // current Howl instance
 
 // Define the regions available for audio
 const audioRegions = ["Connacht", "Munster", "Ulster"] as const;
@@ -163,26 +154,6 @@ const audioButtonClasses: Record<Region, string> = {
 
 // The word being displpayed
 const currentWord = computed(() => shuffledWords.value[currentIndex.value]);
-
-// // Calculates progress of quiz
-// const progressPercentage = computed(() => {
-//   return (currentIndex.value / shuffledWords.value.length) * 100;
-// });
-
-// Function to construct audio URL based on word and region
-const getAudioURL = (word: string, region: Region): string => {
-  const formattedWord = word.trim().toLowerCase();
-  switch (region) {
-    case "Connacht":
-      return `https://www.teanglann.ie/CanC/${formattedWord}.mp3`;
-    case "Munster":
-      return `https://www.teanglann.ie/CanM/${formattedWord}.mp3`;
-    case "Ulster":
-      return `https://www.teanglann.ie/CanU/${formattedWord}.mp3`;
-    default:
-      return "";
-  }
-};
 
 const selectAnswer = (option: string) => {
   if (currentWord.value.english === option) {
@@ -210,42 +181,6 @@ const selectAnswer = (option: string) => {
   }, 1500);
 };
 
-// Function to submit the user's answer
-const submitAnswer = () => {
-  if (!currentWord.value) return;
-
-  isSubmitting.value = true;
-  const correctMeaning = currentWord.value.english?.trim().toLowerCase() || "";
-  const userInput = userAnswer.value.trim().toLowerCase();
-
-  if (userInput === correctMeaning) {
-    feedback.value = "Correct!";
-    feedbackClass.value = "text-green-600 bg-green-100";
-    correctAnswers.value += 1;
-  } else {
-    feedback.value = `Incorrect. The correct meaning is "${currentWord.value.english}".`;
-    feedbackClass.value = "text-red-600 bg-red-100";
-  }
-
-  // Clear user input
-  userAnswer.value = "";
-
-  // Proceed to next word after a short delay
-  setTimeout(() => {
-    feedback.value = "";
-    isSubmitting.value = false;
-    currentIndex.value += 1;
-
-    // If quiz is complete, emit an event
-    if (currentIndex.value >= shuffledWords.value.length) {
-      emits("quizComplete", {
-        correct: correctAnswers.value,
-        total: shuffledWords.value.length,
-      });
-    }
-  }, 1500);
-};
-
 // Function to restart the quiz
 const restartQuiz = () => {
   currentIndex.value = 0;
@@ -256,12 +191,8 @@ const restartQuiz = () => {
 // Reactive class for feedback message
 const feedbackClass = ref("");
 
-// Optionally, shuffle the words for each quiz session
-// You can uncomment the following lines if you want to shuffle
-
+// Shuffle the words for each quiz session
 const shuffledWords = ref(shuffle(words.value));
-
-// Then, use `shuffledWords.value` instead of `props.words` throughout
 </script>
   
 <style scoped>
